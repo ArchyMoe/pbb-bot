@@ -1,0 +1,248 @@
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title> Bot by tyqtyq </title>
+	</head>
+	<body>
+		<script src="https://cdn.luogu.com.cn/js/jquery-2.1.1.min.js" charset="utf-8"></script>
+		<script>
+			// pbb api
+			var TOKEN = "";
+			const request = ({ url, data, method }) => new Promise((resolve, reject) => {
+				$.ajax({
+					type: method,
+					data: data,
+					url: url,
+					dataType: 'json',
+					xhrFields: { withCredentials: false },
+					success: resolve,
+					error: reject
+				});
+			});
+
+			function pbbSend(str) {
+		  	request({
+		  		url: "https://pbb.akioi.ml/api/feed/n0YwNhpd/post",
+		    	data: { content: str, token: TOKEN },
+		    	method: "POST"
+		  	}).then(resp => {
+		    	if (resp.status !== 200) {
+		    		alert(resp.data);
+			  	}
+				});
+			}
+
+			function pbbLoad(pbbPage) {
+				var resp = request({
+					url: "https://pbb.akioi.ml/api/feed/n0YwNhpd/",
+					data: {
+						page: pbbPage,
+						token: TOKEN
+					},
+					method: 'GET'
+				});
+				return resp;
+			}
+			function getMd(resp) {
+				var ret=new Array();
+				for(var i=0; i<resp.data.length; ++i) {
+					ret.push(resp.data[i].content_markdown);
+				}
+				return ret;
+			}
+			function pbbIdDel(id) {
+				request({
+					url: 'https://pbb.akioi.ml/api/feed/delete',
+					data: {
+						id: id,
+						token: TOKEN
+					},
+					method: 'POST'
+				});
+			}
+			function pbbStrDel(str) {
+				// 删除最近发送的 str 犇犇
+				var brk=0;
+				for(var i=1; i<=10; ++i) {
+					pbbLoad(i).then( resp => {
+							if(typeof resp == 'undefined') { brk=1; }
+							for(var j=0; j<resp.data.length; ++j) {
+								if(resp.data[j].content_markdown == str) {
+									pbbIdDel(resp.data[j].id);
+									brk=1;
+								}
+								if(brk) break;
+							}
+						}
+					);
+					if(brk) break;
+				}
+			}
+			// thanks tiger0132 for providing help during the writing of this program
+			// bot
+			// send
+			// pbbSend("test");
+			// query
+			// pbbLoad(1).then( resp => { alert(getMd(resp)[0]); }, () => alert("failed"));
+			var finid = new Array();
+			function seler(dat, num) {
+				for(var i=0; i<dat.length; ++i) if(dat[i] == num) return 1;
+				return 0;
+			}
+			function chkresp(resp) {
+				var count=0;
+				for(var i=0; i<resp.data.length; ++i) {
+					if(resp.data[i].content_markdown.indexOf("@setu-bot : setu")>=0 && !seler(finid, resp.data[i].id)) {
+						++count;
+						console.log("Setu Solve " + resp.data[i].id.toString());
+						finid.push(resp.data[i].id);
+					}
+				}
+				console.log("Setu Count = " + count.toString());
+				console.log(finid);
+				console.log(resp);
+				return count;
+			}
+			var picList = [
+				"https://i.loli.net/2020/11/13/TIe2UjZwMl5XsNz.jpg",
+				"https://i.loli.net/2020/11/13/1cb3ln5J7EtfURZ.jpg",
+				"https://i.loli.net/2020/11/13/Um6xKq5pzCw3nQH.jpg",
+				"https://i.loli.net/2020/11/13/BUSk7KsoGOgiYmN.jpg",
+				"https://i.loli.net/2020/11/13/lMWFIytdiP4bcxC.jpg",
+				"https://i.loli.net/2020/11/13/8S5bxcQdveG6lOE.jpg",
+        			"https://i.loli.net/2020/11/13/GQavVLJ79CxRWPZ.jpg",
+        			"https://i.loli.net/2020/11/13/F3goR9tsySq2xJZ.jpg",
+        			"https://i.loli.net/2020/11/13/zbFtN8ZaLcEXk7j.jpg",
+        			"https://i.loli.net/2020/11/13/yCFYBNi9b5HdXsf.jpg",
+        			"https://cdn-warfare-1302619124.file.myqcloud.com/Thetruenekos/1.png",
+        			"https://cdn-warfare-1302619124.file.myqcloud.com/Thetruenekos/2.png",
+        			"https://cdn-warfare-1302619124.file.myqcloud.com/Thetruenekos/3.png",
+        			"https://cdn-warfare-1302619124.file.myqcloud.com/Thetruenekos/4.png",
+        			"https://cdn-warfare-1302619124.file.myqcloud.com/Thetruenekos/5.png",
+        			"https://cdn-warfare-1302619124.file.myqcloud.com/Thetruenekos/6.png",
+        			"https://cdn-warfare-1302619124.file.myqcloud.com/Thetruenekos/7.png",
+        			"https://cdn-warfare-1302619124.file.myqcloud.com/Thetruenekos/8.png",
+      				"https://cdn-warfare-1302619124.file.myqcloud.com/Thetruenekos/9.png",
+        			"https://cdn-warfare-1302619124.file.myqcloud.com/Thetruenekos/10.png",
+				"https://cdn.jsdelivr.net/gh/userunknownx/blog-bg/1.jpg",
+				"https://cdn.jsdelivr.net/gh/userunknownx/blog-bg/2.jpg",
+				"https://cdn.jsdelivr.net/gh/userunknownx/blog-bg/3.jpg",
+				"https://cdn.jsdelivr.net/gh/userunknownx/blog-bg/5.jpg",
+				"https://cdn.jsdelivr.net/gh/userunknownx/blog-bg/6.jpg",
+				"https://cdn.jsdelivr.net/gh/userunknownx/blog-bg/8.jpg",
+				"https://cdn.jsdelivr.net/gh/userunknownx/blog-bg/10.jpg",
+				"https://cdn.jsdelivr.net/gh/userunknownx/blog-bg/11.jpg",
+				"https://cdn.jsdelivr.net/gh/userunknownx/blog-bg/12.jpg",
+				"https://cdn.jsdelivr.net/gh/userunknownx/blog-bg/13.jpg",
+				"https://cdn.jsdelivr.net/gh/userunknownx/blog-bg/14.jpg",
+				"https://cdn.jsdelivr.net/gh/userunknownx/blog-bg/15.jpg",
+				"https://cdn.jsdelivr.net/gh/userunknownx/blog-bg/16.jpg",
+				"https://cdn.jsdelivr.net/gh/userunknownx/blog-bg/18.jpg",
+				"https://cdn.jsdelivr.net/gh/userunknownx/blog-bg/19.jpg",
+				"https://cdn.jsdelivr.net/gh/userunknownx/blog-bg/20.jpg",
+				"https://cdn.jsdelivr.net/gh/userunknownx/blog-bg/22.jpg"
+			];
+			function getsetu() {
+				return "![](" + picList[ Math.floor((Math.random()*(picList.length))) ] + ")";
+			}
+			function sendsetu(times) {
+				if(times==0) return 0;
+				else {
+					pbbSend(getsetu());
+					setTimeout(function(){sendsetu(times-1)}, 1000);
+				}
+			}
+			var songList = [
+				"「ありふれてる 幸せに恋した\n\nそんな時が 続く気がしてた」\n\n——夕日坂",
+				"「異様な暮らし\n\nでもそれだけが唯一の価値だ」\n\n——krank",
+				"「最後まで言えなかった\n\nこの言葉を君に送るよ\n\n君の事をずっと\n\n愛しているから…」\n\n——Dear",
+				"「叫んだら もしかして\n\n届くかもしれない\n\n贵方へ镇魂曲を送りたい」\n\n——貴方へ 鎮魂曲を",
+				"「この声(こえ) 枯れても\n\n消(き)えない メロディー」\n\n——Last Night, Good Night",
+				"「屆け 夢現に托すこの願いの花を\n\n宵の空に浮かび寂しげに輝いた朧月」\n\n——胧月",
+				"「許されない事ならば 尚更燃え上がるの\n\n(ミク)抱き寄せて欲しい 確かめて欲しい\n\n間違いなど無いんだと 思わせて」\n\n——magnet",
+				"「千本桜 夜ニ紛レ\n\n君ノ声モ届カナイヨ\n\n此処は宴 鋼の檻\n\nその断頭台で見下ろして」\n\n——千本桜",
+				"「くしゃくしゃの笑顔が可愛くて\n\n眠れない夜は君のせいで\n\nこの気持ち今すぐに伝えたい\n\nけどバレたくない\n\nどうしたらいいの」\n\n——願い~あの頃のキミへ~",
+				"「希望の花 繋いだ絆が\n\n今僕らの胸の中にあるから\n\n決して散ることはない\n\n生きる力」\n\n——フリージア",
+				"「深海少女 まだまだ沈む\n\n暗闇の彼方へ閉じこもる\n\n深海少女 だけど知りたい\n\n心惹かれるあの人を見つけたから」\n\n——深海少女",
+				"「All I need is love\n\n声を聞いてよ すこし照れるけど 君に届け\n\nYou're my sweetest one\n\nありふれた言葉の意味を見つけたのは 君だから\n\nきっと ずっと そばにいるよ」\n\n——my sweetest one",
+				"「僕が死のうと思ったのは 心が空っぽになったから\n\n満たされないと泣いているのは きっと満たされたいと願うから」\n\n——僕が死のうと思ったのは",
+				"「答えなんて言われたって\n\n人によってすり替わってって\n\nだから絶対なんて絶対\n\n信じらんないよねぇ」\n\n——アイロニ",
+				"「終わらない夜に願いはひとつ\n\n「星のない空に輝く光を」\n\n戻れない場所に捨てたものでさえ\n\n生まれ変わって明日をきっと照らす」\n\n——六等星の夜",
+				"「夢ならばどれほどよかったでしょう\n\n未だにあなたのことを夢にみる」\n\n——Lemon",
+				"「サヨナラなんてないよ...\n\n今日(きょう)から軌道(みち)を外(はず)れんだ\n\n最後(さいご)まで見(み)送(おく)ってよ\n\n永遠(えいえん)に離(はな)れてくんだ」\n\n——PLANET",
+				"「今はもはや持ち腐れの恋に\n\n些事な延命を乞う患者達\n\n加害者の荒い治療に耐えたい\n\n伴侶たる者はと覚るペイシェント」\n\n——病名は愛だった",
+				"「落(お)ちてく線香花火(せんこうはなび)に\n\n目(め)を輝(かがや)かせ笑(わら)う\n\nはっきりは覚(おぼ)えてないけどわかるよ\n\n遠(とお)い、遠(とお)い夏(なつ) キオクノ蜃気楼(しんきろう)」\n\n——キオクノ蜃気楼",
+				"「見送ってくれたあの春の日\n\n頼りなかった僕に「後悔だけはしないで」と\n\n優しい言葉 温もり その笑顔\n\nずっと覚えてるよ そして忘れないよ\n\n今 心からありがとう」\n\n——ありがとう",
+				"「帰り道の交差点で\n\n声をかけてくれたね「一绪に帰ろう」\n\n仆は 照れくさそうに\n\nカバンで颜を隠しながら\n\n本当は とても とても 嬉しかったよ」\n\n——secret base ～君がくれたもの～",
+				"「君だよ 君なんだよ 教えてくれた\n\n暗闇も光るなら\n\n星空になる\n\n悲しみを笑顔に\n\nもう隠さないで\n\n煌めくどんな星も\n\n君を照らすから」\n\n——光るなら",
+				"「How do I love, how do I love again?\n\nHow do I trust, how do I trust again?」\n\n——Dancing With Your Ghost",
+				"「I was getting kinda used to being someone you loved\n\nAnd I tend to close my eyes when it hurts sometimes\n\nI fall into your arms\n\nI'll be safe in your sound til I come back around」\n\n——Someone You Loved",
+				"「I'd spend 10,000 hours and 10,000 more\n\nOh, if that's what it takes to learn that sweet heart of yours\n\nAnd I might never get there but I'm gonna try\n\nIf it's 10,000 hours or the rest of my life\n\nI'm gonna love you」\n\n——10,000 Hours",
+				"「I'm speechless\n\nStaring at you, standing there in that dress\n\nWhat it's doing to me, ain't a secret\n\nCause watching you is all that I can do」\n\n——Speechless",
+				"「And you're left in the dust\n\nUnless I stuck by ya\n\nYou're a sunflower」\n\n——Sunflower",
+				"「Seasons change and our love went cold\n\nFeed the flame 'cause we can't let it go\n\nRun away, but we're running in circles\n\nRun away, run away」\n\n——Circles",
+				"「Can we just talk? Can we just talk?\n\nTalk about where we're goin'\n\nBefore we get lost, lend me your thought\n\nCan't get what we want without knowin'」\n\n——Talk",
+				"「Kiss me before sunrise\n\nOr I'm leaving you tonight\n\nMy love found a place\n\nTo stay and rest like bed\n\nAlways and forever, meant to be together\n\nIf we could change this world」\n\n——Kiss me"
+			];
+
+			function getsong() {
+				return songList[ Math.floor((Math.random()*(songList.length))) ];
+			}
+			function sendsong(times) {
+				if(times==0) return 0;
+				else {
+					pbbSend(getsong());
+					setTimeout(function(){sendsong(times-1)}, 1000);
+				}
+			}
+			var songid=new Array();
+			function chksong(resp) {
+				var count=0;
+				for(var i=0; i<resp.data.length; ++i) {
+					if(resp.data[i].content_markdown.indexOf("@setu-bot : song")>=0 && !seler(songid, resp.data[i].id)) {
+						++count;
+						console.log("Song Solve " + resp.data[i].id.toString());
+						songid.push(resp.data[i].id);
+					}
+				}
+				console.log("Song Count = " + count.toString());
+				console.log(songid);
+				console.log(resp);
+				return count;
+			}
+			var helpid=new Array();
+			function chkhelp(resp) {
+				var count=0;
+				for(var i=0; i<resp.data.length; ++i) {
+					if(resp.data[i].content_markdown.indexOf("@setu-bot : help")>=0 && !seler(helpid, resp.data[i].id)) {
+						++count;
+						console.log("Help Solve " + resp.data[i].id.toString());
+						helpid.push(resp.data[i].id);
+					}
+				}
+				console.log("Help Count = " + count.toString());
+				console.log(helpid);
+				console.log(resp);
+				return count;
+			}
+			function sendhelp(times) {
+				if(times==0) return 0;
+				else { pbbSend("Usage:\n\n- @setu\u001f-bot : setu : 请求一张涩图\n\n- @setu\u001f-bot : song : 请求一个歌词\n\n- @setu\u001f-bot : help : 请求帮助."); }
+			}
+			var pbbListenServiceStarted;
+			function pbbStart() {
+				pbbListenServiceStarted = 1;
+			}
+			function pbbClose() {
+				pbbListenServiceStarted = 0;
+			}
+			function pbbListen() {
+				console.log("Start listening"); pbbListenServiceStarted = 0;
+				setInterval(function(){ if(pbbListenServiceStarted == 1) { pbbLoad(1).then(resp => { sendsetu(chkresp(resp)); sendsong(chksong(resp)); sendhelp(chkhelp(resp)); });} }, 20000);
+			}
+			pbbListen();
+		</script>
+		<button onclick="pbbStart()">Start</button>
+		<button onclick="pbbClose()">Close</button>
+	</body>
+</html>
