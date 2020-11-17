@@ -1,0 +1,145 @@
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>OwO-bot / UserNone的妹子</title>
+	</head>
+	<h1>调用方法</h1>
+	<p>搭建：F12，console中输入</br><code>InputToken('TOKEN')</code></br>即可使自己的Token作为OwO-bot(UserNone的妹子)</br>使用<code>InputRoom('分区ID')</code>即可设置发送的分区</br>使用<code>StartBot()</code>开始运行，<code>CloseBot()</code>停止</p>
+  <p>伪犇中调用：在bot分区输入<code>@owo-bot : UserNone's meizi</code>即可</p>
+	<body>
+		<script src="https://cdn.luogu.com.cn/js/jquery-2.1.1.min.js" charset="utf-8"></script>
+		<script>
+			// pbb api
+			var TOKEN = "";
+			var TheRoomId = "";
+			
+			function InputToken(tkn) {
+				TOKEN = tkn;
+				console.log("Got Token: "+TOKEN);
+			}
+			
+			function InputRoom(rmid) {
+				TheRoomId = rmid;
+				console.log("Got Room: "+TheRoomId);
+			}
+			
+			const request = ({ url, data, method }) => new Promise((resolve, reject) => {
+				$.ajax({
+					type: method,
+					data: data,
+					url: url,
+					dataType: 'json',
+					xhrFields: { withCredentials: false },
+					success: resolve,
+					error: reject
+				});
+			});
+
+			function pbbSend(str) {
+		  	request({
+		  		url: "https://pbb.akioi.ml/api/feed/"+TheRoomId+"/post",
+		    	data: { content: str, token: TOKEN },
+		    	method: "POST"
+		  	}).then(resp => {
+		    	if (resp.status !== 200) {
+		    		alert(resp.data);
+			  	}
+				});
+			}
+
+			function pbbLoad(pbbPage) {
+				var resp = request({
+					url: "https://pbb.akioi.ml/api/feed/"+TheRoomId+"/",
+					data: {
+						page: pbbPage,
+						token: TOKEN
+					},
+					method: 'GET'
+				});
+				return resp;
+			}
+			function getMd(resp) {
+				var ret=new Array();
+				for(var i=0; i<resp.data.length; ++i) {
+					ret.push(resp.data[i].content_markdown);
+				}
+				return ret;
+			}
+			function pbbIdDel(id) {
+				request({
+					url: 'https://pbb.akioi.ml/api/feed/delete',
+					data: {
+						id: id,
+						token: TOKEN
+					},
+					method: 'POST'
+				});
+			}
+			function pbbStrDel(str) {
+				// 删除最近发送的 str 犇犇
+				var brk=0;
+				for(var i=1; i<=10; ++i) {
+					pbbLoad(i).then( resp => {
+							if(typeof resp == 'undefined') { brk=1; }
+							for(var j=0; j<resp.data.length; ++j) {
+								if(resp.data[j].content_markdown == str) {
+									idDel(resp.data[j].id);
+									brk=1;
+								}
+								if(brk) break;
+							}
+						}
+					);
+					if(brk) break;
+				}
+			}
+			// thanks tiger0132 for providing help during the writing of this program
+			// bot
+			// send
+			// pbbSend("test");
+			// query
+			// pbbLoad(1).then( resp => { alert(getMd(resp)[0]); }, () => alert("failed"));
+			var finid = new Array();
+			function seler(dat, num) {
+				for(var i=0; i<dat.length; ++i) if(dat[i] == num) return 1;
+				return 0;
+			}
+			function chkresp(resp) {
+				var count=0;
+				for(var i=0; i<resp.data.length; ++i) {
+					if(resp.data[i].content_markdown.indexOf("@owo-bot : UserNone's meizi")>=0 && !seler(finid, resp.data[i].id)) {
+						++count;
+						console.log("Solve " + resp.data[i].id.toString());
+						finid.push(resp.data[i].id);
+					}
+				}
+				console.log("Count = " + count.toString());
+				console.log(finid);
+				console.log(resp);
+				return count;
+			}
+			function getHito(times){
+				if(times==0) return 0;
+				else{
+				        pbbSend("OwO-Bot / UserNone的妹子：![](http://www.dmoe.cc/random.php)");
+				    }
+				    setTimeout(function(){getHito(times-1)}, 5000);
+				}
+			}
+			function StartBot() {
+				pbbListenServiceStarted = 1;
+				console.log('Bot Starts');
+			}
+			function CloseBot() {
+				pbbListenServiceStarted = 0;
+				console.log('Bot Stops');
+			}
+			var pbbListenServiceStarted=1;
+			function pbbListen() {
+				console.log("Start listening"); pbbListenServiceStarted = 0;
+				setInterval(function(){pbbLoad(1).then(resp => { getHito(chkresp(resp)); });}, 20000);
+			}
+			pbbListen();
+		</script>
+	</body>
+</html>
