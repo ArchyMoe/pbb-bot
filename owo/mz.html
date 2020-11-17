@@ -5,7 +5,7 @@
 	</head>
 	<h1>调用方法</h1>
 	<p>搭建：F12，console中输入</br><code>InputToken('TOKEN')</code></br>即可使自己的Token作为OwO-bot(UserNone的妹子)</br>使用<code>InputRoom('分区ID')</code>即可设置发送的分区</br>使用<code>StartBot()</code>开始运行，<code>CloseBot()</code>停止</p>
-  <p>伪犇中调用：在bot分区输入<code>@owo-bot : UserNone's meizi</code>即可</p>
+  <p>伪犇中调用：在bot分区输入<code>@owo-bot : UserNone de meizi</code>即可</p>
 	<body>
 		<script src="https://cdn.luogu.com.cn/js/jquery-2.1.1.min.js" charset="utf-8"></script>
 		<script>
@@ -107,7 +107,7 @@
 			function chkresp(resp) {
 				var count=0;
 				for(var i=0; i<resp.data.length; ++i) {
-					if(resp.data[i].content_markdown.indexOf("@owo-bot : UserNone's meizi")>=0 && !seler(finid, resp.data[i].id)) {
+					if(resp.data[i].content_markdown.indexOf("@owo-bot : UserNone de meizi")>=0 && !seler(finid, resp.data[i].id)) {
 						++count;
 						console.log("Solve " + resp.data[i].id.toString());
 						finid.push(resp.data[i].id);
