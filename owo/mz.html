@@ -137,7 +137,7 @@
 			var pbbListenServiceStarted=1;
 			function pbbListen() {
 				console.log("Start listening"); pbbListenServiceStarted = 0;
-				setInterval(function(){pbbLoad(1).then(resp => { getHito(chkresp(resp)); });}, 20000);
+				setInterval(function(){pbbLoad(1).then(resp => { getHito(1); });}, 20000);
 			}
 			pbbListen();
 		</script>
