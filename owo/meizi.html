@@ -1,0 +1,153 @@
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title> Bot by tyqtyq </title>
+	</head>
+	<body>
+		<script src="https://cdn.luogu.com.cn/js/jquery-2.1.1.min.js" charset="utf-8"></script>
+		<script>
+			// pbb api
+			var TOKEN = "";
+      function InputToken(tkn) {
+				TOKEN = tkn;
+				console.log("Got Token: "+TOKEN);
+			}
+			const request = ({ url, data, method }) => new Promise((resolve, reject) => {
+				$.ajax({
+					type: method,
+					data: data,
+					url: url,
+					dataType: 'json',
+					xhrFields: { withCredentials: false },
+					success: resolve,
+					error: reject
+				});
+			});
+
+			function pbbSend(str) {
+		  	request({
+		  		url: "https://pbb.akioi.ml/api/feed/n0YwNhpd/post",
+		    	data: { content: str, token: TOKEN },
+		    	method: "POST"
+		  	}).then(resp => {
+		    	if (resp.status !== 200) {
+		    		alert(resp.data);
+			  	}
+				});
+			}
+
+			function pbbLoad(pbbPage) {
+				var resp = request({
+					url: "https://pbb.akioi.ml/api/feed/n0YwNhpd/",
+					data: {
+						page: pbbPage,
+						token: TOKEN
+					},
+					method: 'GET'
+				});
+				return resp;
+			}
+			function getMd(resp) {
+				var ret=new Array();
+				for(var i=0; i<resp.data.length; ++i) {
+					ret.push(resp.data[i].content_markdown);
+				}
+				return ret;
+			}
+			function pbbIdDel(id) {
+				request({
+					url: 'https://pbb.akioi.ml/api/feed/delete',
+					data: {
+						id: id,
+						token: TOKEN
+					},
+					method: 'POST'
+				});
+			}
+			function pbbStrDel(str) {
+				// 删除最近发送的 str 犇犇
+				var brk=0;
+				for(var i=1; i<=10; ++i) {
+					pbbLoad(i).then( resp => {
+							if(typeof resp == 'undefined') { brk=1; }
+							for(var j=0; j<resp.data.length; ++j) {
+								if(resp.data[j].content_markdown == str) {
+									pbbIdDel(resp.data[j].id);
+									brk=1;
+								}
+								if(brk) break;
+							}
+						}
+					);
+					if(brk) break;
+				}
+			}
+			// thanks tiger0132 for providing help during the writing of this program
+			// bot
+			// send
+			// pbbSend("test");
+			// query
+			// pbbLoad(1).then( resp => { alert(getMd(resp)[0]); }, () => alert("failed"));
+			var finid = new Array();
+			function seler(dat, num) {
+				for(var i=0; i<dat.length; ++i) if(dat[i] == num) return 1;
+				return 0;
+			}
+			function chkresp(resp) {
+				var count=0;
+				for(var i=0; i<resp.data.length; ++i) {
+					if(resp.data[i].content_markdown.indexOf("@owo-bot : UserNone de meizi")>=0 && !seler(finid, resp.data[i].id)) {
+						++count;
+						console.log("Setu Solve " + resp.data[i].id.toString());
+						finid.push(resp.data[i].id);
+					}
+				}
+				console.log("Setu Count = " + count.toString());
+				console.log(finid);
+				console.log(resp);
+				return count;
+			}
+			var picList = [
+				"https://guangzan.gitee.io/imagehost/awescnb/images/anime/22.jpg",
+        "https://cdn-warfare-1302619124.file.myqcloud.com/Thetruenekos/1.png",
+        "https://i.loli.net/2020/11/13/GQavVLJ79CxRWPZ.jpg"
+			];
+      var numList = [
+				"5",
+        "2",
+        "4"
+			];
+      function get-rand(){
+        return Math.floor((Math.random()*(picList.length)));
+      }
+			function getsetu() {
+        var sendid=get-rand();
+        return "OwO-Bot / UserNone的其中"+numList[ sendid ]+"个妹子:\n\n"+"![](" + picList[ sendid ] + ")";
+			}
+			function sendsetu(times) {
+				if(times==0) return 0;
+				else {
+					pbbSend(getsetu());
+					setTimeout(function(){sendsetu(times-1)}, 1000);
+				}
+			}
+			
+			
+			
+			var pbbListenServiceStarted;
+			function pbbStart() {
+				pbbListenServiceStarted = 1;
+			}
+			function pbbClose() {
+				pbbListenServiceStarted = 0;
+			}
+			function pbbListen() {
+				console.log("Start listening"); pbbListenServiceStarted = 0;
+				setInterval(function(){ if(pbbListenServiceStarted == 1) { pbbLoad(1).then(resp => { sendsetu(chkresp(resp));  });} }, 20000);
+			}
+			pbbListen();
+		</script>
+		<button onclick="pbbStart()">Start</button>
+		<button onclick="pbbClose()">Close</button>
+	</body>
+</html>
